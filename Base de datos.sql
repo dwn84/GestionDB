@@ -45,3 +45,13 @@ primary key(num_detalle,id_factura),
 foreign key (id_factura) references facturas(num_factura) on delete no action on update no action,
 foreign key (id_producto) references productos(id_producto) on delete no action on update no action
 );
+
+insert into clientes(nombre,apellido,direccion,fecha_nacimiento,telefono,email) 
+values ('edwin','barragan','la ceja','1981-01-01','3012129344','ebarragan@udemedellin.edu.co'),
+('esperanza','gomez','medellin','1981-01-01','301555777','esperancita@gmail.com');
+
+-- select * from clientes;
+-- update clientes set;
+-- delete;
+
+-- select * from clientes join..;
