@@ -1,5 +1,11 @@
+use master;
+go
+drop database if exists facturacion;
+go
 create database facturacion;
+go
 use facturacion;
+go
 create table clientes(
 id_cliente int identity primary key,
 nombre varchar(25) not null,
@@ -9,16 +15,19 @@ fecha_nacimiento date not null,
 telefono char(11) not null,
 email varchar(55) not null
 );
+go
 create table modo_pagos(
 num_pago int identity primary key,
 nombre varchar(25) not null,
 otros_detalles varchar(25) not null,
 );
+go
 create table categorias(
 id_categoria int identity primary key,
 nombre varchar(25) not null,
 descripcion varchar(25) not null,
 );
+go
 create table facturas(
 num_factura int identity primary key,
 id_cliente int,
@@ -27,6 +36,7 @@ num_pago int,
 foreign key (id_cliente) references clientes(id_cliente) on delete no action on update no action,
 foreign key (num_pago) references modo_pagos(num_pago) on delete no action on update no action
 );
+go
 create table productos(
 id_producto int identity primary key,
 nombre varchar(255) not null,
@@ -35,6 +45,7 @@ stock int default 99,
 id_categoria int not null,
 foreign key (id_categoria) references categorias(id_categoria) on delete no action on update no action,
 );
+go
 create table detalles(
 num_detalle int,
 id_factura int,
@@ -45,7 +56,8 @@ primary key(num_detalle,id_factura),
 foreign key (id_factura) references facturas(num_factura) on delete no action on update no action,
 foreign key (id_producto) references productos(id_producto) on delete no action on update no action
 );
-insert into clientes(nombre,apellido,direccion,fecha_nacimiento,telefono,email) values 
+go
+insert into clientes(nombre,apellido,direccion,fecha_nacimiento,telefono,email) values
 ('edwin','barragan','Calle 1','1981-01-01','3012129344','ebarragan@udemedellin.edu.co'),
 ('esperanza','gomez','Cra 99','1981-01-01','301555777','esperancita@gmail.com'),
 ('Juan','Herrera','Cra 1','1981-01-01','3012121212','Juan@gmail.com'),
@@ -63,12 +75,14 @@ insert into clientes(nombre,apellido,direccion,fecha_nacimiento,telefono,email) 
 ('Esmeralda','Londoño','Cra 13','1961-01-13','3012121224','Esmeralda@gmail.com'),
 ('Erika','Muñoz','Cra 14','1961-01-14','3012121225','Erika@gmail.com'),
 ('Hernan','Quintero','Cra 15','1961-01-15','3012121226','Hernan@gmail.com');
-insert into categorias(nombre,descripcion) values 
+go
+insert into categorias(nombre,descripcion) values
 ('Electrodomésticos','Electrodomésticos'),
 ('Mercado','Canasta familiar'),
 ('Vestuario','Ropa'),
 ('Ferreteria','Herramientas'),
 ('Juguetería ','Juguetes');
+go
 insert into productos(nombre,precio,stock,id_categoria) values
 ('Nevera 294 litros','1600000','40','1'),
 ('Televisor 55'+ char(39),'1700000','21','1'),
@@ -78,12 +92,15 @@ insert into productos(nombre,precio,stock,id_categoria) values
 ('Cinta Aislante 15m x 18mm','5000','44','4'),
 ('Lenteja X 500 gr','3500','333','2'),
 ('Canasta 30 huevos AAA','21000','111','2'),
-('Camiseta Polo Para Hombre L','35500','20','3');
+('Camiseta Polo Para Hombre L','35500','20','3'),
+('Camiseta Polo Para Mujer L','45500','40','3');
+go
 insert into modo_pagos(nombre,otros_detalles) values
 ('efectivo','monedas y billetes'),
 ('tarjeta débito','tarjeta débito'),
 ('tarjeta crédito','tarjeta crédito'),
 ('bitcoin','criptomoneda');
+go
 insert into facturas(id_cliente,fecha,num_pago) values
 ('1','2022-01-20','1'),
 ('1','2022-01-22','1'),
@@ -101,6 +118,7 @@ insert into facturas(id_cliente,fecha,num_pago) values
 ('11','2021-12-24','4'),
 ('12','2021-12-27','1'),
 ('15','2022-01-28','1');
+go
 insert into detalles values
 ('1','1','1','1600000','1'),
 ('2','1','2','1700000','1'),
@@ -132,3 +150,8 @@ insert into detalles values
 ('1','14','7','3500','4'),
 ('1','15','7','3500','4'),
 ('1','16','3','14000','2');
+go
+-- Mostrar el total a pagar por factura
+-- Mostrar los clientes que no han realizado compras
+-- Incrementar en un 15% los productos que no han sido vendidos
+-- Comparar el tiempo de procesamiento entre una transacción autoconfirmada y una explicita
