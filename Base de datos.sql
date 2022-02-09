@@ -151,7 +151,77 @@ insert into detalles values
 ('1','15','7','3500','4'),
 ('1','16','3','14000','2');
 go
+
+--Subtotal de productos
+select 
+	f.num_factura, 
+	c.apellido, 
+	mp.nombre [medio de pago],
+	d.num_detalle,
+	p.nombre [producto],
+	d.precio,
+	d.cantidad,
+	d.precio * d.cantidad [subtotal]
+
+from facturas f
+
+join clientes c on f.id_cliente = c.id_cliente
+join modo_pagos mp on mp.num_pago = f.num_pago
+join detalles d on d.id_factura = f.num_factura
+join productos p on p.id_producto= d.id_producto
+order by f.num_factura
+
 -- Mostrar el total a pagar por factura
+
+select 
+	f.num_factura, 
+	sum(d.precio * d.cantidad) [total]
+
+from facturas f
+
+join clientes c on f.id_cliente = c.id_cliente
+join modo_pagos mp on mp.num_pago = f.num_pago
+join detalles d on d.id_factura = f.num_factura
+join productos p on p.id_producto= d.id_producto
+group by f.num_factura
+order by f.num_factura
+
 -- Mostrar los clientes que no han realizado compras
+
+select 
+	--f.num_factura, 
+	c.apellido	
+
+from facturas f
+
+right join clientes c on f.id_cliente = c.id_cliente
+where f.num_factura is null
+order by f.num_factura
+
 -- Incrementar en un 15% los productos que no han sido vendidos
+update p
+set  p.precio = p.precio * 1.15
+from productos p
+left join detalles d on d.id_producto = p.id_producto
+where d.num_detalle is null
+
+select * from productos;
+
 -- Comparar el tiempo de procesamiento entre una transacción autoconfirmada y una explicita
+
+--definir variables
+declare
+	@tiempoInicial  dateTime = getdate(),
+	@i int = 1
+
+while @i<10000
+--delete modo_pagos where nombre = 'A'
+--select * from modo_pagos
+begin
+	begin tran
+		insert into modo_pagos(nombre,otros_detalles) values('A','B');
+	commit
+	set @i = @i + 1
+end;
+select DATEDIFF(millisecond,@tiempoInicial, getdate())
+go
