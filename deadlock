@@ -1,0 +1,78 @@
+Sesion 1
+
+begin tran
+--paso 1
+update [Person].[Address]
+set AddressLine1 = 'AAA'
+where AddressID = 1
+--paso 3
+
+update [Person].[Person]
+set FirstName = 'WWW'
+where BusinessEntityID = 1
+
+/****** Sesion 2  ******/
+
+begin tran
+--paso 2
+update [Person].[Person]
+set FirstName = 'MMM'
+where BusinessEntityID = 1
+--paso 4
+update [Person].[Address]
+set AddressLine1 = 'BBB'
+where AddressID = 1
+
+--Control deadlock 
+/****** Sesion 1  ******/
+begin tran
+--paso 1
+update [Person].[Address]
+set AddressLine1 = 'AAA'
+where AddressID = 1
+--paso 3
+
+begin try
+
+	DECLARE @result INT;  
+	
+	EXEC @result=sp_getapplock  
+    @DbPrincipal='public',  
+    @Resource='Management',  
+    @LockMode='Exclusive',  
+    @LockOwner='Transaction';  
+
+	if @result>=0
+	begin
+	   	update [Person].[Person]
+		set FirstName = 'WWW'
+		where BusinessEntityID = 1
+	end
+	else
+	begin
+		print 'Error interno'
+	end
+
+	commit tran
+end try
+
+begin catch
+	rollback
+end catch
+
+
+/****** Sesion 2  ******/
+set DEADLOCK_PRIORITY high
+begin tran
+--paso 2
+update [Person].[Person]
+set FirstName = 'MMM'
+where BusinessEntityID = 1
+--paso 4
+update [Person].[Address]
+set AddressLine1 = 'BBB'
+where AddressID = 1
+
+-- https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-getapplock-transact-sql
+-- https://docs.microsoft.com/en-us/sql/t-sql/functions/applock-mode-transact-sql?view=sql-server-ver15
+-- https://docs.microsoft.com/en-us/sql/relational-databases/sql-server-transaction-locking-and-row-versioning-guide?view=sql-server-ver15#lock_modes
